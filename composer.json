@@ -1,0 +1,20 @@
+{
+    "name": "silverbackstudio/svbk-rcp-coursepress",
+    "description": "Apply disocunt to subscirption for a specified amount of time",
+    "type": "wordpress-plugin",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Brando Meniconi",
+            "email": "b.meniconi@silverbackstudio.it"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require-dev": {
+        "wimg/php-compatibility": "^7.1",
+        "squizlabs/php_codesniffer": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {"Svbk\\WP\\Plugins\\RCP\\CoursePress\\": "src/"}
+    }
+}

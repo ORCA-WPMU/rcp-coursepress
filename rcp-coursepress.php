@@ -39,7 +39,7 @@ function svbk_rcp_coursepress_init() {
 	add_action( 'rcp_pre_edit_subscription_level', array( $svbk_rcp_coursepress, 'admin_subscription_form_save' ), 10, 2 );
 
 	add_filter( 'coursepress_enroll_student', array( $svbk_rcp_coursepress, 'allow_enroll' ) , 10, 3 );
-	add_action( 'rcp_member_post_set_subscription_id', array( $svbk_rcp_coursepress, 'enroll' ), 10, 3 );
+	add_action( 'rcp_set_status', array( $svbk_rcp_coursepress, 'enroll' ), 10, 4 );
 
 	// // Add additional fields to Course Setup Step 6 if paid is checked
 	// add_filter(

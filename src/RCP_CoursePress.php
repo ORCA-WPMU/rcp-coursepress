@@ -83,30 +83,43 @@ class RCP_CoursePress {
 	}
 
 	/**
-	 * Enrolls the specified user to the courses linked to thi subsctiption level.
+	 * Enrolls the specified user to the courses linked to this subsctiption level.
 	 *
-	 * @param int        $subscription_id The subscription level ID.
+	 * @param string     $new_status The status that is being set.
 	 * @param int        $user_id The user id.
-	 * @param RCP_Member $member The RCP_Member object class.
+	 * @param int        $old_status The previous status.
+	 * @param RCP_Member $rcp_member The RCP_Member object class.
 	 *
 	 * @return void
 	 */
-	public function enroll( $subscription_id, $user_id, $member ) {
+	public function enroll( $new_status, $user_id, $old_status, $rcp_member ) {
 
+		global $rcp_options, $rcp_levels_db;
+		
 		if ( ! class_exists( 'CoursePress_Data_Course' ) ) {
 			return;
-		}
-
-		global $rcp_levels_db;
-
+		}	
+		
+		$subscription_id = $rcp_member->get_subscription_id();
 		$courses = $rcp_levels_db->get_meta( $subscription_id, 'enroll_courses', true );
 
 		remove_filter( 'coursepress_enroll_student', array( $this, 'allow_enroll' ) , 10, 3 );
+		
+		if ( $rcp_member->is_active() ) {
+			
+			foreach ( $courses as $course ) {
+				CoursePress_Data_Course::enroll_student( $user_id, intval( $course ) );
+			}
 
-		foreach ( $courses as $course ) {
-			CoursePress_Data_Course::enroll_student( $user_id, intval( $course ) );
+		} else {
+			
+			foreach ( $courses as $course ) {
+				CoursePress_Data_Course::withdraw_student( $user_id, intval( $course ) );
+			}			
+			
 		}
 
+		add_filter( 'coursepress_enroll_student', array( $this, 'allow_enroll' ) , 10, 3 );
 	}
 
 	/**
@@ -120,10 +133,20 @@ class RCP_CoursePress {
 	 */
 	public function allow_enroll( $enroll_student, $student_id, $course_id ) {
 
-		if ( function_exists( 'rcp_get_subscription' ) ) {
-			return boolval( rcp_get_subscription_id( $student_id ) );
+		global $rcp_options, $rcp_levels_db;
+
+		if ( class_exists( 'RCP_Member' ) ) {
+			$rcp_member = new RCP_Member( $student_id );
+			$subscription_id = $rcp_member->get_subscription_id();
+		} else { 
+			return $enroll_student;
 		}
 
+		if ( $rcp_member->is_active() && $subscription_id ) {
+			$courses = $rcp_levels_db->get_meta( $subscription_id, 'enroll_courses', true );
+			return in_array($course_id, $courses);
+		}
+		
 		return $enroll_student;
 	}
 

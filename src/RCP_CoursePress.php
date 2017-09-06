@@ -42,7 +42,7 @@ class RCP_CoursePress {
 				$courses = get_posts(
 					array(
 						'post_type' => CoursePress_Data_Course::get_post_type_name(),
-						'post_status' => 'publish',
+						'post_status' => 'any',
 					)
 				);
 

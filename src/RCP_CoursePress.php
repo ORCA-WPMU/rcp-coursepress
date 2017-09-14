@@ -101,11 +101,11 @@ class RCP_CoursePress {
 		}	
 		
 		$subscription_id = $rcp_member->get_subscription_id();
-		$courses = $rcp_levels_db->get_meta( $subscription_id, 'enroll_courses', true );
+		$courses = (array)$rcp_levels_db->get_meta( $subscription_id, 'enroll_courses', true );
 
 		remove_filter( 'coursepress_enroll_student', array( $this, 'allow_enroll' ) , 10, 3 );
 		
-		if ( $rcp_member->is_active() ) {
+		if ( !empty($courses) && $rcp_member->is_active() ) {
 			
 			foreach ( $courses as $course ) {
 				CoursePress_Data_Course::enroll_student( $user_id, intval( $course ) );
